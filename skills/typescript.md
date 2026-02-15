@@ -7,6 +7,12 @@ type Animal = 'dog' | 'cat' | 'bunny'
 type Animals = Array<Animal>
 ```
 
+Types with generics — types that produce other types — should be named like functions:
+
+```ts
+type Serialize<Data> = Data
+```
+
 ### Generics
 
 `camelCase` names for generics:
