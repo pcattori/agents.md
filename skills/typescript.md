@@ -138,3 +138,21 @@ it is a legal definition as far as the type system is concerned.
 
 Normalization depends on knowing the _exact_ properties of object by statically analyzing object literals,
 so having extra properties that are invisible to the type system could return incorrect types if TS normalizes the return type.
+
+You can do you own explicit normalization with this helper:
+
+```ts
+// Emulates https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#improved-type-inference-for-object-literals
+export type Normalize<T> = _Normalize<UnionKeys<T>, T>
+// prettier-ignore
+type _Normalize<Key extends keyof any, T> =
+  T extends infer U ?
+    Pretty<
+      & { [K in Key as K extends keyof U ? undefined extends U[K] ? never : K : never]: K extends keyof U ? U[K] : never }
+      & { [K in Key as K extends keyof U ? undefined extends U[K] ? K : never : never]?: K extends keyof U ? U[K] : never }
+      & { [K in Key as K extends keyof U ? never : K]?: undefined}
+    >
+  :
+  never
+type UnionKeys<T> = T extends any ? keyof T : never
+```
