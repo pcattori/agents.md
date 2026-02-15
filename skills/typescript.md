@@ -33,7 +33,7 @@ function emojify<animal extends Animal>(animal: animal): Emojify<animal> {
 }
 ```
 
-One exception: its ok to use names like `T` when you are referring to "any type" or writing abstract helpers.
+Exception: It is ok to use names like `T` for abstract types like a generic for a utility that works on any type.
 
 **Why:**
 
