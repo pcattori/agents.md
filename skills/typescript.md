@@ -156,3 +156,30 @@ type _Normalize<Key extends keyof any, T> =
   never
 type UnionKeys<T> = T extends any ? keyof T : never
 ```
+
+## Testing
+
+Copy `Expect` and `Equal` from [type-challenges utils](https://github.com/type-challenges/type-challenges/blob/main/utils/index.d.ts):
+
+```ts
+export type Expect<T extends true> = T
+
+// prettier-ignore
+export type Equal<X, Y> =
+  (<T>() => T extends X ? 1 : 2) extends
+  (<T>() => T extends Y ? 1 : 2) ? true : false
+```
+
+Then create a type for each test or a type for all the tests:
+
+```ts
+type _test = Expect<Equal<1, 1>>
+
+type _tests = [
+  Expect<Equal<1, 1>>,
+  Expect<Equal<2, 2>>,
+  // ...
+]
+```
+
+It's also common to use `Assert` as the name for `Expect`.
