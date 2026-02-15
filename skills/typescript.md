@@ -27,6 +27,8 @@ function emojify<animal extends Animal>(animal: animal): Emojify<animal> {
 }
 ```
 
+One exception: its ok to use names like `T` when you are referring to "any type" or writing abstract helpers.
+
 **Why:**
 
 I often used to start by naming the type `Animal`,
