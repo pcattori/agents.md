@@ -81,6 +81,22 @@ type Result3 = ToArray3<StringOrNumber>
 //   ^? Array<string | number>
 ```
 
+If you want to force distribution, I recommend creating an alias for `any` to make your intentions clear:
+
+```ts
+type ForceDistributive = any
+
+// prettier-ignore
+type Parse<source extends string> =
+  source extends ForceDistributive ?
+    Tokenize<source> extends infer tokens ? SomeComplexTypeStuffHere :
+//  ^^^^^^^^^^^^^^^^ without `ForceDistributive`,
+// this wouldn't be distributive since generic `source` is wrapped by `Tokenize`
+    never
+  :
+  never
+```
+
 ## Normalized return types for object literals
 
 As mentioned in the [TypeScript 2.7 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html?utm_source=chatgpt.com#improved-type-inference-for-object-literals),
