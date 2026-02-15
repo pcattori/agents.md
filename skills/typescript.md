@@ -64,3 +64,61 @@ type ToArray3<T> = [T] extends [any] ? Array<T> : never
 type Result3 = ToArray3<StringOrNumber>
 //   ^? Array<string | number>
 ```
+
+## Normalized return types for object literals
+
+As mentioned in the [TypeScript 2.7 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html?utm_source=chatgpt.com#improved-type-inference-for-object-literals),
+TS will normalize return types for object literals:
+
+```ts
+function loadData() {
+  let user = getUser()
+  if (user === undefined) {
+    return { error: 'No user found' }
+  }
+  return { posts: getPosts(user) }
+}
+
+let data = loadData()
+//  ^? { error: string, posts?: undefined } | { error?: undefined, posts: Array<string> }
+
+data.posts
+//   ^? Array<string> | undefined
+```
+
+If the function does not directly return object literals, normalization breaks down:
+
+```ts
+const id = <T>(value: T): T => value
+
+function loadData() {
+  let user = getUser()
+  if (user === undefined) {
+    return id({ error: 'No user found' })
+  }
+  return id({ posts: getPosts(user) })
+}
+
+let data = loadData()
+//  ^? { error: string } | { posts: Array<string> }
+
+data.posts
+//   ^^^^^
+// Property 'posts' does not exist on type '{ error: string; } | { posts: string[]; }'.
+//   Property 'posts' does not exist on type '{ error: string; }'.(2339)
+```
+
+Why does TypeScript treat these differently?
+Because our `id` function is allowed to return an object with extra properties.
+What if one of those extra properties happened to be called `posts` or `error`?
+
+```ts
+const id = <T>(value: T): T => ({ ...value, error: 1 })
+```
+
+While admittedly this seems like bad code
+(probably better to omit the `: T` return type or replace with `: T & { error: number }`),
+it is a legal definition as far as the type system is concerned.
+
+Normalization depends on knowing the _exact_ properties of object by statically analyzing object literals,
+so having extra properties that are invisible to the type system could return incorrect types if TS normalizes the return type.
