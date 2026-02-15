@@ -40,6 +40,20 @@ But using "any" in the name was confusing; `UnknownAnimal` would be better but t
 Instead, think of a generic as an "instance" of a broader type.
 Then, we can reuse the "camelCase for instances, PascalCase for classes" convention.
 
+## Simplify intersections
+
+```ts
+type Simplify<T> = { [k in keyof T]: T[k] } & {}
+
+type Both = { name: string } & { age: number }
+//   ^? { name: string } & { age: number }
+
+type Simplified = Simplify<Both>
+//   ^? { name: string } & { age: number }
+```
+
+It's also common to name this helper `Pretty`.
+
 ## Union distribution
 
 TypeScript has [distributive conditional types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types).
