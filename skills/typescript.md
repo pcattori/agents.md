@@ -205,3 +205,20 @@ type _tests = [
 ```
 
 It's also common to use `Assert` as the name for `Expect`.
+
+### Benchmarking
+
+The number of types instantiated by TypeScript serves as a proxy for type inference speed.
+
+You can benchmark your types with [@ark/attest](https://github.com/arktypeio/arktype/tree/main/ark/attest#benches):
+
+```ts
+// Add baseline to account for one-time, upfront cost of your type function
+bench.baseline(() => {
+  {} as Parse<"">
+})
+
+bench("bench type", () => {
+	return {} as Parse<"defenestration">
+}).types([87, "instantiations"])
+```
