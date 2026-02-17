@@ -179,6 +179,41 @@ type _Normalize<Key extends keyof any, T> =
 type UnionKeys<T> = T extends any ? keyof T : never
 ```
 
+## Debugging
+
+To do `console.log`-style debuggging in types,
+use an "always true" conditional type like `any extends any` to debug:
+
+```ts
+// prettier-ignore
+type Emojify<animal extends Animal> =
+  animal extends 'dog' ? '🐶' :
+  animal extends 'cat' ? '🐱' :
+  any extends any ? { debug: animal } :
+  animal extends 'bunny' ? '🐰' :
+  never
+
+type Debug = Emojify<'bunny'>
+//   ^? { debug: 'bunny' }
+```
+
+You may need to tweak the shape of your debugging value so that any users of your type function still work:
+
+```ts
+type DoubleEmojify<animal extends Animal> =
+  `${Emojify<animal>}${Emojify<animal>}`
+//   ^^^^^^^^^^^^^^^ { debug: ... } type would not work in string template literal type
+
+// prettier-ignore
+type Emojify<animal extends Animal> =
+  animal extends 'dog' ? '🐶' :
+  animal extends 'cat' ? '🐱' :
+  any extends any ? `debug: ${animal}` :
+  //                 ^^^^^^^^^^^^^^^^ so instead we return a string
+  animal extends 'bunny' ? '🐰' :
+  never
+```
+
 ## Testing
 
 Copy `Expect` and `Equal` from [type-challenges utils](https://github.com/type-challenges/type-challenges/blob/main/utils/index.d.ts):
