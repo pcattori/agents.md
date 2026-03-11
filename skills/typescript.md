@@ -60,6 +60,22 @@ type Simplified = Simplify<Both>
 
 It's also common to name this helper `Pretty`.
 
+## Multiple extends checks in one `extends`
+
+```ts
+// Before
+// prettier-ignore
+type _ =
+  A extends CondA ?
+    B extends CondB ? true :
+    false
+  :
+  false
+
+// after
+type _ = [A, B] extends [CondA, CondB] ? true : false
+```
+
 ## Union distribution
 
 TypeScript has [distributive conditional types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types).
